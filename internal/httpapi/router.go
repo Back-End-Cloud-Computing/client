@@ -1,7 +1,9 @@
 package httpapi
 
 import (
+	"log/slog"
 	"net/http"
+	"runtime/debug"
 	"slices"
 	"strings"
 
@@ -38,7 +40,28 @@ func Router(h *Handler, verificador *auth.Verifier, origensPermitidas []string) 
 	mux.Handle("GET /clients", protegido(somenteAdmin(http.HandlerFunc(h.listarPerfis))))
 	mux.Handle("GET /clients/{id}", protegido(somenteAdmin(http.HandlerFunc(h.buscarPerfil))))
 
-	return cors(origensPermitidas)(mux)
+	return recuperaPanico(h.log)(cors(origensPermitidas)(mux))
+}
+
+// recuperaPanico transforma um panic em 500 no formato de erro da API.
+//
+// Sem isso o net/http derruba a conexão sem resposta nenhuma, e quem chamou vê
+// um erro de rede em vez de um erro do serviço.
+func recuperaPanico(log *slog.Logger) func(http.Handler) http.Handler {
+	return func(proximo http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			defer func() {
+				if motivo := recover(); motivo != nil {
+					log.Error("panic ao tratar requisição",
+						"rota", r.URL.Path, "motivo", motivo,
+						"stack", string(debug.Stack()))
+					EscreveErro(w, http.StatusInternalServerError,
+						"Não foi possível concluir a operação. Tente novamente.")
+				}
+			}()
+			proximo.ServeHTTP(w, r)
+		})
+	}
 }
 
 // cors responde ao preflight e libera apenas as origens configuradas.
@@ -48,12 +71,14 @@ func cors(origensPermitidas []string) func(http.Handler) http.Handler {
 			origem := r.Header.Get("Origin")
 			permitida := origem != "" && slices.Contains(origensPermitidas, origem)
 
+			// Sempre: a resposta depende do Origin mesmo quando ele não é
+			// permitido. Anunciar isso só nos casos liberados deixaria um cache
+			// servir a uma origem a resposta guardada para outra.
+			w.Header().Add("Vary", "Origin")
+
 			if permitida {
 				w.Header().Set("Access-Control-Allow-Origin", origem)
 				w.Header().Set("Access-Control-Allow-Credentials", "true")
-				// A resposta muda conforme a origem: sem isso, um cache
-				// poderia servir a uma origem o cabeçalho liberado para outra.
-				w.Header().Add("Vary", "Origin")
 			}
 
 			if r.Method == http.MethodOptions && r.Header.Get("Access-Control-Request-Method") != "" {

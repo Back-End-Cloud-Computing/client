@@ -47,7 +47,10 @@ func NewHandler(repo Repositorio, log *slog.Logger) *Handler {
 //	@Security		BearerAuth
 //	@Router			/clients [post]
 func (h *Handler) criarPerfil(w http.ResponseWriter, r *http.Request) {
-	claims, _ := auth.ClaimsDo(r.Context())
+	claims, ok := h.contaAutenticada(w, r)
+	if !ok {
+		return
+	}
 
 	dados, ok := h.lerDados(w, r)
 	if !ok {
@@ -78,7 +81,10 @@ func (h *Handler) criarPerfil(w http.ResponseWriter, r *http.Request) {
 //	@Security		BearerAuth
 //	@Router			/clients/me [get]
 func (h *Handler) meuPerfil(w http.ResponseWriter, r *http.Request) {
-	claims, _ := auth.ClaimsDo(r.Context())
+	claims, ok := h.contaAutenticada(w, r)
+	if !ok {
+		return
+	}
 
 	cliente, err := h.repo.BuscarPorConta(r.Context(), claims.AccountID)
 	if errors.Is(err, domain.ErrPerfilNaoEncontrado) {
@@ -108,7 +114,10 @@ func (h *Handler) meuPerfil(w http.ResponseWriter, r *http.Request) {
 //	@Security		BearerAuth
 //	@Router			/clients/me [put]
 func (h *Handler) atualizarMeuPerfil(w http.ResponseWriter, r *http.Request) {
-	claims, _ := auth.ClaimsDo(r.Context())
+	claims, ok := h.contaAutenticada(w, r)
+	if !ok {
+		return
+	}
 
 	dados, ok := h.lerDados(w, r)
 	if !ok {
@@ -139,7 +148,10 @@ func (h *Handler) atualizarMeuPerfil(w http.ResponseWriter, r *http.Request) {
 //	@Security		BearerAuth
 //	@Router			/clients/me [delete]
 func (h *Handler) removerMeuPerfil(w http.ResponseWriter, r *http.Request) {
-	claims, _ := auth.ClaimsDo(r.Context())
+	claims, ok := h.contaAutenticada(w, r)
+	if !ok {
+		return
+	}
 
 	err := h.repo.Remover(r.Context(), claims.AccountID)
 	if errors.Is(err, domain.ErrPerfilNaoEncontrado) {
@@ -218,6 +230,22 @@ func (h *Handler) buscarPerfil(w http.ResponseWriter, r *http.Request) {
 //	@Router		/health [get]
 func (h *Handler) saude(w http.ResponseWriter, _ *http.Request) {
 	EscreveJSON(w, http.StatusOK, map[string]string{"status": "UP"})
+}
+
+// contaAutenticada recupera as claims postas pelo middleware.
+//
+// Só devolve ok=false se a rota tiver sido registrada sem o middleware de
+// autenticação — erro de programação, não de quem chamou. Sem esta checagem
+// seria um acesso a ponteiro nulo.
+func (h *Handler) contaAutenticada(w http.ResponseWriter, r *http.Request) (*auth.Claims, bool) {
+	claims, ok := auth.ClaimsDo(r.Context())
+	if !ok {
+		h.log.Error("rota protegida registrada sem o middleware de autenticação",
+			"rota", r.URL.Path)
+		EscreveErro(w, http.StatusUnauthorized, "Autenticação necessária.")
+		return nil, false
+	}
+	return claims, true
 }
 
 // lerDados decodifica e valida o corpo. Devolve ok=false se já respondeu erro.

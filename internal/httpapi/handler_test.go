@@ -98,10 +98,15 @@ func (r *repoFalso) Remover(_ context.Context, conta uuid.UUID) error {
 type ambiente struct {
 	servidor *httptest.Server
 	chave    *rsa.PrivateKey
-	repo     *repoFalso
 }
 
 func montar(t *testing.T) *ambiente {
+	t.Helper()
+	return montarCom(t, novoRepoFalso())
+}
+
+// montarCom permite trocar o repositório — usado para simular falhas.
+func montarCom(t *testing.T, repo httpapi.Repositorio) *ambiente {
 	t.Helper()
 
 	chave, err := rsa.GenerateKey(rand.Reader, 2048)
@@ -121,7 +126,6 @@ func montar(t *testing.T) *ambiente {
 		t.Fatalf("criando verificador: %v", err)
 	}
 
-	repo := novoRepoFalso()
 	log := slog.New(slog.NewTextHandler(io.Discard, nil))
 	router := httpapi.Router(httpapi.NewHandler(repo, log), verificador,
 		[]string{"http://localhost:4200"})
@@ -129,7 +133,7 @@ func montar(t *testing.T) *ambiente {
 	servidor := httptest.NewServer(router)
 	t.Cleanup(servidor.Close)
 
-	return &ambiente{servidor: servidor, chave: chave, repo: repo}
+	return &ambiente{servidor: servidor, chave: chave}
 }
 
 func (a *ambiente) token(t *testing.T, conta uuid.UUID, papel string) string {
