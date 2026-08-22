@@ -87,6 +87,16 @@ docker compose up --build
 
 O serviço sobe em `http://localhost:8082`.
 
+> **Se aparecer `Bind for 0.0.0.0:5432 failed: port is already allocated`**, você já tem
+> um PostgreSQL rodando na máquina. Suba numa porta diferente:
+>
+> ```bash
+> DB_HOST_PORT=5433 docker compose up --build
+> ```
+>
+> Essa porta serve só para você inspecionar o banco de fora (psql, DBeaver) — o serviço
+> fala com o PostgreSQL pela rede do Docker e não depende dela.
+
 ### Fluxo completo
 
 ```bash

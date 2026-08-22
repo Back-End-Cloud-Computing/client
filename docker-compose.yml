@@ -11,6 +11,10 @@ services:
   postgres-client:
     image: postgres:17-alpine
     container_name: postgres-client
+    # Sem isto o serviço morre de vez num "docker compose restart" ou num
+    # reboot: o depends_on/healthcheck só vale no "up", então a aplicação
+    # sobe antes do banco aceitar conexão, falha e não tenta de novo.
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME:-ganjj_client}
       POSTGRES_USER: ${DB_USER:-ganjj_client}
@@ -36,6 +40,7 @@ services:
     build: .
     image: ganjj/client:1.0.0
     container_name: client
+    restart: unless-stopped
     depends_on:
       postgres-client:
         condition: service_healthy
