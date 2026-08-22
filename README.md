@@ -85,6 +85,12 @@ docker network create ganjj-net
 docker compose up --build
 ```
 
+No Windows (PowerShell), troque o script do meio:
+
+```powershell
+.\scripts\fetch-public-key.ps1
+```
+
 O serviço sobe em `http://localhost:8082`.
 
 > **Se aparecer `Bind for 0.0.0.0:5432 failed: port is already allocated`**, você já tem
