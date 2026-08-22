@@ -42,7 +42,13 @@ type Verifier struct {
 func NewVerifier(publicKeyPath, issuer string) (*Verifier, error) {
 	pemBytes, err := os.ReadFile(publicKeyPath)
 	if err != nil {
-		return nil, fmt.Errorf("lendo a chave pública em %s: %w", publicKeyPath, err)
+		// Erro comum em clone novo: a pasta keys/ não é versionada, e o Docker
+		// cria o diretório vazio ao montar o volume em vez de reclamar. Sem esta
+		// dica, a mensagem seria só "arquivo não encontrado".
+		return nil, fmt.Errorf(
+			"chave pública não encontrada em %s: %w\n"+
+				"Rode ./scripts/fetch-public-key.sh com o Authorization Service no ar",
+			publicKeyPath, err)
 	}
 
 	publicKey, err := jwt.ParseRSAPublicKeyFromPEM(pemBytes)

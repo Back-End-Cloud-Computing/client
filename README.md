@@ -24,6 +24,17 @@ Microsserviço de perfil de cliente do e-commerce **GANJJ**. Guarda dados de cad
 A conta sempre vem da claim `sub` do token, **nunca do corpo da requisição** — assim
 ninguém consegue criar ou alterar o perfil de outra pessoa.
 
+Documentação interativa: `http://localhost:8082/swagger/index.html`. Para usar as rotas
+protegidas por lá, faça login no Authorization, copie o `accessToken` e informe em
+**Authorize** no formato `Bearer {token}`.
+
+A UI vem embutida no binário, então funciona sem internet. Se você mudar as anotações
+dos handlers, regenere a spec:
+
+```bash
+swag init -g cmd/api/main.go -o docs --parseDependency --parseInternal
+```
+
 ### Exemplo de corpo
 
 ```json
@@ -110,8 +121,16 @@ go run ./cmd/api
 go test ./...
 ```
 
-Os testes usam um repositório em memória e chaves geradas na hora, então não precisam
-de banco nem do Authorization no ar.
+Os testes de `auth` e `httpapi` usam chaves geradas na hora e um repositório em
+memória — não precisam de banco nem do Authorization no ar.
+
+Os testes de `storage` sobem um **PostgreSQL de verdade** num container, porque é a
+única forma de exercitar o SQL: um repositório falso confirmaria a lógica do handler,
+mas não diria nada sobre as queries. Eles precisam de Docker. Sem Docker:
+
+```bash
+go test ./... -short
+```
 
 ## Configuração
 
