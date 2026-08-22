@@ -1,4 +1,21 @@
 // Command api sobe o Client Service do GANJJ.
+//
+//	@title			GANJJ — Client Service
+//	@version		1.0.0
+//	@description	Perfil de cliente do e-commerce GANJJ (nome, telefone, endereço).
+//	@description	Credenciais não ficam aqui: e-mail e senha são do Authorization Service.
+//	@description
+//	@description	Para usar as rotas protegidas, faça login no Authorization
+//	@description	(POST http://localhost:8081/auth/login), copie o accessToken e informe
+//	@description	em Authorize no formato: Bearer {token}
+//
+//	@host		localhost:8082
+//	@BasePath	/
+//
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
+//	@description				Token JWT emitido pelo Authorization Service.
 package main
 
 import (

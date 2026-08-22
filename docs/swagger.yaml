@@ -1,0 +1,262 @@
+basePath: /
+definitions:
+  github_com_Back-End-Cloud-Computing_client_internal_domain.Client:
+    properties:
+      accountId:
+        type: string
+      atualizadoEm:
+        type: string
+      criadoEm:
+        type: string
+      endereco:
+        $ref: '#/definitions/github_com_Back-End-Cloud-Computing_client_internal_domain.Endereco'
+      id:
+        type: string
+      nome:
+        type: string
+      telefone:
+        type: string
+    type: object
+  github_com_Back-End-Cloud-Computing_client_internal_domain.DadosPerfil:
+    properties:
+      endereco:
+        $ref: '#/definitions/github_com_Back-End-Cloud-Computing_client_internal_domain.Endereco'
+      nome:
+        type: string
+      telefone:
+        type: string
+    type: object
+  github_com_Back-End-Cloud-Computing_client_internal_domain.Endereco:
+    properties:
+      bairro:
+        type: string
+      cep:
+        type: string
+      cidade:
+        type: string
+      complemento:
+        type: string
+      estado:
+        type: string
+      logradouro:
+        type: string
+      numero:
+        type: string
+    type: object
+  internal_httpapi.ErroResposta:
+    properties:
+      error:
+        type: string
+      fields:
+        additionalProperties:
+          type: string
+        type: object
+      message:
+        type: string
+      status:
+        type: integer
+      timestamp:
+        type: string
+    type: object
+host: localhost:8082
+info:
+  contact: {}
+  description: |-
+    Perfil de cliente do e-commerce GANJJ (nome, telefone, endereço).
+    Credenciais não ficam aqui: e-mail e senha são do Authorization Service.
+
+    Para usar as rotas protegidas, faça login no Authorization
+    (POST http://localhost:8081/auth/login), copie o accessToken e informe
+    em Authorize no formato: Bearer {token}
+  title: GANJJ — Client Service
+  version: 1.0.0
+paths:
+  /clients:
+    get:
+      description: Restrito a contas com papel ADMIN.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Back-End-Cloud-Computing_client_internal_domain.Client'
+            type: array
+        "401":
+          description: Token ausente ou inválido
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+        "403":
+          description: A conta não é ADMIN
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+      security:
+      - BearerAuth: []
+      summary: Lista todos os perfis
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      description: A conta vem da claim "sub" do token, nunca do corpo — assim ninguém
+        cria perfil no lugar de outra pessoa.
+      parameters:
+      - description: Dados do perfil
+        in: body
+        name: perfil
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Back-End-Cloud-Computing_client_internal_domain.DadosPerfil'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_Back-End-Cloud-Computing_client_internal_domain.Client'
+        "400":
+          description: Campos inválidos
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+        "401":
+          description: Token ausente ou inválido
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+        "409":
+          description: A conta já possui perfil
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+      security:
+      - BearerAuth: []
+      summary: Cria o perfil da conta autenticada
+      tags:
+      - perfil
+  /clients/{id}:
+    get:
+      description: Restrito a contas com papel ADMIN.
+      parameters:
+      - description: Id do perfil (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Back-End-Cloud-Computing_client_internal_domain.Client'
+        "400":
+          description: Id não é um UUID válido
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+        "401":
+          description: Token ausente ou inválido
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+        "403":
+          description: A conta não é ADMIN
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+        "404":
+          description: Perfil nao encontrado
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+      security:
+      - BearerAuth: []
+      summary: Busca um perfil por id
+      tags:
+      - admin
+  /clients/me:
+    delete:
+      description: A conta em si continua existindo no Authorization Service.
+      responses:
+        "204":
+          description: Removido (ou já não existia)
+        "401":
+          description: Token ausente ou inválido
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+      security:
+      - BearerAuth: []
+      summary: Remove o próprio perfil
+      tags:
+      - perfil
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Back-End-Cloud-Computing_client_internal_domain.Client'
+        "401":
+          description: Token ausente ou inválido
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+        "404":
+          description: A conta ainda não tem perfil
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+      security:
+      - BearerAuth: []
+      summary: Perfil da conta autenticada
+      tags:
+      - perfil
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados do perfil
+        in: body
+        name: perfil
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Back-End-Cloud-Computing_client_internal_domain.DadosPerfil'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Back-End-Cloud-Computing_client_internal_domain.Client'
+        "400":
+          description: Campos inválidos
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+        "401":
+          description: Token ausente ou inválido
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+        "404":
+          description: A conta ainda não tem perfil
+          schema:
+            $ref: '#/definitions/internal_httpapi.ErroResposta'
+      security:
+      - BearerAuth: []
+      summary: Atualiza o próprio perfil
+      tags:
+      - perfil
+  /health:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Health check
+      tags:
+      - infra
+securityDefinitions:
+  BearerAuth:
+    description: Token JWT emitido pelo Authorization Service.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

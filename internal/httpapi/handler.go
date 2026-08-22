@@ -34,8 +34,18 @@ func NewHandler(repo Repositorio, log *slog.Logger) *Handler {
 
 // criarPerfil cria o perfil da conta autenticada.
 //
-// A conta vem do token, nunca do corpo da requisição: assim ninguém consegue
-// criar um perfil no lugar de outra pessoa.
+//	@Summary		Cria o perfil da conta autenticada
+//	@Description	A conta vem da claim "sub" do token, nunca do corpo — assim ninguém cria perfil no lugar de outra pessoa.
+//	@Tags			perfil
+//	@Accept			json
+//	@Produce		json
+//	@Param			perfil	body		domain.DadosPerfil	true	"Dados do perfil"
+//	@Success		201		{object}	domain.Client
+//	@Failure		400		{object}	ErroResposta	"Campos inválidos"
+//	@Failure		401		{object}	ErroResposta	"Token ausente ou inválido"
+//	@Failure		409		{object}	ErroResposta	"A conta já possui perfil"
+//	@Security		BearerAuth
+//	@Router			/clients [post]
 func (h *Handler) criarPerfil(w http.ResponseWriter, r *http.Request) {
 	claims, _ := auth.ClaimsDo(r.Context())
 
@@ -57,6 +67,16 @@ func (h *Handler) criarPerfil(w http.ResponseWriter, r *http.Request) {
 	EscreveJSON(w, http.StatusCreated, cliente)
 }
 
+// meuPerfil devolve o perfil da conta autenticada.
+//
+//	@Summary		Perfil da conta autenticada
+//	@Tags			perfil
+//	@Produce		json
+//	@Success		200	{object}	domain.Client
+//	@Failure		401	{object}	ErroResposta	"Token ausente ou inválido"
+//	@Failure		404	{object}	ErroResposta	"A conta ainda não tem perfil"
+//	@Security		BearerAuth
+//	@Router			/clients/me [get]
 func (h *Handler) meuPerfil(w http.ResponseWriter, r *http.Request) {
 	claims, _ := auth.ClaimsDo(r.Context())
 
@@ -74,6 +94,19 @@ func (h *Handler) meuPerfil(w http.ResponseWriter, r *http.Request) {
 	EscreveJSON(w, http.StatusOK, cliente)
 }
 
+// atualizarMeuPerfil substitui os dados do perfil da conta autenticada.
+//
+//	@Summary		Atualiza o próprio perfil
+//	@Tags			perfil
+//	@Accept			json
+//	@Produce		json
+//	@Param			perfil	body		domain.DadosPerfil	true	"Dados do perfil"
+//	@Success		200		{object}	domain.Client
+//	@Failure		400		{object}	ErroResposta	"Campos inválidos"
+//	@Failure		401		{object}	ErroResposta	"Token ausente ou inválido"
+//	@Failure		404		{object}	ErroResposta	"A conta ainda não tem perfil"
+//	@Security		BearerAuth
+//	@Router			/clients/me [put]
 func (h *Handler) atualizarMeuPerfil(w http.ResponseWriter, r *http.Request) {
 	claims, _ := auth.ClaimsDo(r.Context())
 
@@ -96,6 +129,15 @@ func (h *Handler) atualizarMeuPerfil(w http.ResponseWriter, r *http.Request) {
 	EscreveJSON(w, http.StatusOK, cliente)
 }
 
+// removerMeuPerfil apaga o perfil da conta autenticada.
+//
+//	@Summary		Remove o próprio perfil
+//	@Description	A conta em si continua existindo no Authorization Service.
+//	@Tags			perfil
+//	@Success		204	"Removido (ou já não existia)"
+//	@Failure		401	{object}	ErroResposta	"Token ausente ou inválido"
+//	@Security		BearerAuth
+//	@Router			/clients/me [delete]
 func (h *Handler) removerMeuPerfil(w http.ResponseWriter, r *http.Request) {
 	claims, _ := auth.ClaimsDo(r.Context())
 
@@ -114,6 +156,16 @@ func (h *Handler) removerMeuPerfil(w http.ResponseWriter, r *http.Request) {
 }
 
 // listarPerfis é restrito a ADMIN (ver rotas).
+//
+//	@Summary		Lista todos os perfis
+//	@Description	Restrito a contas com papel ADMIN.
+//	@Tags			admin
+//	@Produce		json
+//	@Success		200	{array}		domain.Client
+//	@Failure		401	{object}	ErroResposta	"Token ausente ou inválido"
+//	@Failure		403	{object}	ErroResposta	"A conta não é ADMIN"
+//	@Security		BearerAuth
+//	@Router			/clients [get]
 func (h *Handler) listarPerfis(w http.ResponseWriter, r *http.Request) {
 	clientes, err := h.repo.Listar(r.Context())
 	if err != nil {
@@ -124,6 +176,19 @@ func (h *Handler) listarPerfis(w http.ResponseWriter, r *http.Request) {
 }
 
 // buscarPerfil é restrito a ADMIN (ver rotas).
+//
+//	@Summary		Busca um perfil por id
+//	@Description	Restrito a contas com papel ADMIN.
+//	@Tags			admin
+//	@Produce		json
+//	@Param			id	path		string	true	"Id do perfil (UUID)"
+//	@Success		200	{object}	domain.Client
+//	@Failure		400	{object}	ErroResposta	"Id não é um UUID válido"
+//	@Failure		401	{object}	ErroResposta	"Token ausente ou inválido"
+//	@Failure		403	{object}	ErroResposta	"A conta não é ADMIN"
+//	@Failure		404	{object}	ErroResposta	"Perfil nao encontrado"
+//	@Security		BearerAuth
+//	@Router			/clients/{id} [get]
 func (h *Handler) buscarPerfil(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
@@ -144,6 +209,13 @@ func (h *Handler) buscarPerfil(w http.ResponseWriter, r *http.Request) {
 	EscreveJSON(w, http.StatusOK, cliente)
 }
 
+// saude responde ao healthcheck.
+//
+//	@Summary	Health check
+//	@Tags		infra
+//	@Produce	json
+//	@Success	200	{object}	map[string]string
+//	@Router		/health [get]
 func (h *Handler) saude(w http.ResponseWriter, _ *http.Request) {
 	EscreveJSON(w, http.StatusOK, map[string]string{"status": "UP"})
 }

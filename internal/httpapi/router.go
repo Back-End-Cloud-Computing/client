@@ -5,6 +5,9 @@ import (
 	"slices"
 	"strings"
 
+	httpSwagger "github.com/swaggo/http-swagger/v2"
+
+	_ "github.com/Back-End-Cloud-Computing/client/docs" // registra a spec gerada pelo swag
 	"github.com/Back-End-Cloud-Computing/client/internal/auth"
 )
 
@@ -20,6 +23,10 @@ func Router(h *Handler, verificador *auth.Verifier, origensPermitidas []string) 
 
 	// Sem autenticação: usado pelo healthcheck do Docker.
 	mux.HandleFunc("GET /health", h.saude)
+
+	// Documentação interativa. A UI é embutida no binário, então funciona sem
+	// internet. Em /swagger/index.html.
+	mux.Handle("GET /swagger/", httpSwagger.WrapHandler)
 
 	// Perfil da própria conta.
 	mux.Handle("POST /clients", protegido(http.HandlerFunc(h.criarPerfil)))
