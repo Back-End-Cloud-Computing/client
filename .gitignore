@@ -22,3 +22,6 @@ go.work.sum
 # IDE
 .idea/
 .vscode/
+
+# Chave publica do Authorization — obtida por ambiente, nao versionada
+keys/

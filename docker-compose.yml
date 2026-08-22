@@ -1,0 +1,65 @@
+# Sobe o Client Service junto do seu PostgreSQL, os dois na rede ganjj-net.
+#
+# A rede e externa de proposito: o Authorization Service e os demais
+# microsservicos do GANJJ entram nessa mesma rede.
+#
+#   docker network create ganjj-net       # uma vez, antes do primeiro up
+#   ./scripts/fetch-public-key.sh         # pega a chave publica do authorization
+#   docker compose up --build
+
+services:
+  postgres-client:
+    image: postgres:17-alpine
+    container_name: postgres-client
+    environment:
+      POSTGRES_DB: ${DB_NAME:-ganjj_client}
+      POSTGRES_USER: ${DB_USER:-ganjj_client}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-ganjj_client}
+    ports:
+      # Publicada so para inspecionar o banco da maquina (psql, DBeaver). O
+      # servico nao usa esta porta: ele fala com o Postgres pela rede do Docker.
+      # Se voce ja tem um Postgres local na 5432, defina DB_HOST_PORT=5433.
+      - "${DB_HOST_PORT:-5432}:5432"
+    volumes:
+      - postgres-client-data:/var/lib/postgresql/data
+    healthcheck:
+      # O servico so sobe depois que o banco aceita conexao.
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-ganjj_client} -d ${DB_NAME:-ganjj_client}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - ganjj-net
+
+  client:
+    build: .
+    image: ganjj/client:1.0.0
+    container_name: client
+    depends_on:
+      postgres-client:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8082
+      DB_HOST: postgres-client
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-ganjj_client}
+      DB_USER: ${DB_USER:-ganjj_client}
+      DB_PASSWORD: ${DB_PASSWORD:-ganjj_client}
+      # Chave publica do Authorization: permite verificar tokens, nunca emitir.
+      JWT_PUBLIC_KEY_PATH: /keys/public.pem
+      JWT_ISSUER: ${JWT_ISSUER:-ganjj-authorization}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200,http://localhost:5173,http://localhost:3000}
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./keys:/keys:ro
+    networks:
+      - ganjj-net
+
+volumes:
+  postgres-client-data:
+
+networks:
+  ganjj-net:
+    external: true

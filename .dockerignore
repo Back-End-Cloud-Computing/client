@@ -1,0 +1,7 @@
+.git/
+.idea/
+.vscode/
+*.md
+keys/
+*.pem
+.env
