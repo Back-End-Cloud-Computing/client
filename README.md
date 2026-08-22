@@ -55,6 +55,11 @@ swag init -g cmd/api/main.go -o docs --parseDependency --parseInternal
 
 ## Como a autenticação funciona aqui
 
+> Dúvidas gerais sobre autenticação no GANJJ (access e refresh token, cookie, onde o
+> front guarda, erros comuns) estão respondidas em
+> [COMO-FUNCIONA.md](https://github.com/Back-End-Cloud-Computing/authorization/blob/main/docs/COMO-FUNCIONA.md),
+> no repositório do authorization.
+
 Este serviço **não chama o Authorization** para autenticar requisições. Ele carrega a
 chave pública uma vez, na inicialização, e verifica a assinatura dos tokens localmente.
 A chave pública só permite verificar — emitir tokens continua sendo exclusividade do
