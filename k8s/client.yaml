@@ -1,0 +1,78 @@
+# Client Service no Kubernetes.
+#
+# Troque "seu-usuario-dockerhub" pelo seu usuario real antes de aplicar, ou use
+# a imagem local se o cluster compartilhar o daemon do Docker (caso do OrbStack).
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          image: ganjj/client:1.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          env:
+            # Banco alcancado pelo NOME DO SERVICE, nunca pelo IP do Pod.
+            - name: DB_HOST
+              value: postgres-client
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: ganjj_client
+            - name: DB_USER
+              value: ganjj_client
+            - name: DB_PASSWORD
+              value: ganjj_client
+            - name: JWT_PUBLIC_KEY_PATH
+              value: /keys/public.pem
+            - name: JWT_ISSUER
+              value: ganjj-authorization
+          volumeMounts:
+            - name: jwt-public-key
+              mountPath: /keys
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            httpGet:
+              path: /instance
+              port: 8082
+            initialDelaySeconds: 15
+            periodSeconds: 20
+      volumes:
+        # ConfigMap e nao Secret: este servico so recebe a chave PUBLICA, que
+        # permite verificar tokens mas nao emitir. A privada fica somente no
+        # Authorization, num Secret.
+        - name: jwt-public-key
+          configMap:
+            name: jwt-public-key
+
+---
+# Endereco estavel do Client dentro do cluster.
+apiVersion: v1
+kind: Service
+metadata:
+  name: client
+spec:
+  selector:
+    app: client
+  ports:
+    - port: 8082
+      targetPort: 8082

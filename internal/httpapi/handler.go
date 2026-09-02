@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/google/uuid"
 
@@ -219,6 +220,26 @@ func (h *Handler) buscarPerfil(w http.ResponseWriter, r *http.Request) {
 	}
 
 	EscreveJSON(w, http.StatusOK, cliente)
+}
+
+// instancia diz qual Pod respondeu à requisição.
+//
+// Dentro de um Pod, o Kubernetes coloca o nome do Pod na variável HOSTNAME.
+// Com várias réplicas atrás do mesmo Service, chamar esta rota repetidas vezes
+// mostra nomes diferentes — é assim que se enxerga a distribuição entre elas.
+// Fora do cluster devolve "local".
+//
+//	@Summary	Nome do Pod que respondeu
+//	@Tags		infra
+//	@Produce	json
+//	@Success	200	{object}	map[string]string
+//	@Router		/instance [get]
+func (h *Handler) instancia(w http.ResponseWriter, _ *http.Request) {
+	pod := os.Getenv("HOSTNAME")
+	if pod == "" {
+		pod = "local"
+	}
+	EscreveJSON(w, http.StatusOK, map[string]string{"pod": pod})
 }
 
 // saude responde ao healthcheck.

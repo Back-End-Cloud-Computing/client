@@ -26,6 +26,10 @@ func Router(h *Handler, verificador *auth.Verifier, origensPermitidas []string) 
 	// Sem autenticação: usado pelo healthcheck do Docker.
 	mux.HandleFunc("GET /health", h.saude)
 
+	// Sem autenticação: mostra qual réplica respondeu, para observar a
+	// distribuição entre Pods no Kubernetes.
+	mux.HandleFunc("GET /instance", h.instancia)
+
 	// Documentação interativa. A UI é embutida no binário, então funciona sem
 	// internet. Em /swagger/index.html.
 	mux.Handle("GET /swagger/", httpSwagger.WrapHandler)

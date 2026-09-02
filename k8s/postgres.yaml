@@ -1,0 +1,53 @@
+# Banco do Client dentro do cluster.
+#
+# Uma replica so, pelo mesmo motivo do Oracle no Authorization: o Deployment
+# aqui mantem o Pod de pe e da a ele um nome estavel, nao escala o banco.
+#
+# Os dados vivem no disco do Pod. Se ele for recriado, o banco comeca vazio e a
+# aplicacao recria a tabela na subida.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-client
+  template:
+    metadata:
+      labels:
+        app: postgres-client
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: ganjj_client
+            - name: POSTGRES_USER
+              value: ganjj_client
+            - name: POSTGRES_PASSWORD
+              value: ganjj_client
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "ganjj_client", "-d", "ganjj_client"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 12
+
+---
+# Endereco estavel do banco. E este nome que a aplicacao usa em DB_HOST.
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-client
+spec:
+  selector:
+    app: postgres-client
+  ports:
+    - port: 5432
+      targetPort: 5432
