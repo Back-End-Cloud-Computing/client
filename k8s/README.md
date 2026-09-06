@@ -84,6 +84,18 @@ O Deployment recria o Pod para manter as três réplicas declaradas.
 kubectl port-forward service/client 8082:8082
 ```
 
+## Sobre a imagem
+
+Publicada em [eduardofabri/client](https://hub.docker.com/r/eduardofabri/client).
+Para publicar uma versão nova:
+
+```bash
+docker build -t eduardofabri/client:1.2.0 .
+docker push eduardofabri/client:1.2.0
+```
+
+E atualize a tag em `image:` no `client.yaml`.
+
 ## Limitação conhecida
 
 O PostgreSQL roda como Deployment sem volume persistente: se o Pod for recriado,

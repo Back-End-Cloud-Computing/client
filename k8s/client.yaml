@@ -19,7 +19,10 @@ spec:
     spec:
       containers:
         - name: client
-          image: ganjj/client:1.1.0
+          image: eduardofabri/client:1.1.0
+          # A imagem esta publicada no Docker Hub. IfNotPresent evita baixar
+          # de novo quando o cluster ja tem a mesma tag em cache local (caso
+          # do OrbStack, que compartilha o daemon do Docker).
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8082
