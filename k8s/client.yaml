@@ -59,6 +59,15 @@ spec:
               port: 8082
             initialDelaySeconds: 15
             periodSeconds: 20
+          # Sem isto um Pod com bug poderia consumir os recursos do node
+          # inteiro. O Go pede bem menos que a JVM do authorization.
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
+            limits:
+              cpu: "250m"
+              memory: "128Mi"
       volumes:
         # ConfigMap e nao Secret: este servico so recebe a chave PUBLICA, que
         # permite verificar tokens mas nao emitir. A privada fica somente no
