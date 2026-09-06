@@ -1,0 +1,19 @@
+# Entrada HTTP externa para o Client. Ver o comentário em
+# authorization/k8s/ingress.yaml sobre por que o roteamento é por host.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: client-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: client.ganjj.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: client
+                port:
+                  number: 8082

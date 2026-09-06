@@ -80,8 +80,18 @@ O Deployment recria o Pod para manter as três réplicas declaradas.
 
 ## Acessar do host
 
+**Via port-forward:**
+
 ```bash
 kubectl port-forward service/client 8082:8082
+```
+
+**Via Ingress** — ver a explicação equivalente em `authorization/k8s/README.md`:
+
+```bash
+kubectl apply -f k8s/ingress.yaml
+kubectl get svc -n ingress-nginx ingress-nginx-controller   # pega o EXTERNAL-IP
+curl -H "Host: client.ganjj.local" http://<EXTERNAL-IP>/health
 ```
 
 ## Sobre a imagem
