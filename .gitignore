@@ -25,3 +25,5 @@ go.work.sum
 
 # Chave publica do Authorization — obtida por ambiente, nao versionada
 keys/
+
+/api

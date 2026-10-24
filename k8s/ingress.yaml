@@ -10,7 +10,28 @@ spec:
     - host: client.ganjj.local
       http:
         paths:
-          - path: /
+          - path: /clients
+            pathType: Prefix
+            backend:
+              service:
+                name: client
+                port:
+                  number: 8082
+          - path: /health
+            pathType: Exact
+            backend:
+              service:
+                name: client
+                port:
+                  number: 8082
+          - path: /instance
+            pathType: Exact
+            backend:
+              service:
+                name: client
+                port:
+                  number: 8082
+          - path: /swagger
             pathType: Prefix
             backend:
               service:

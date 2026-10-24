@@ -1,6 +1,8 @@
 # Etapa 1 — compila o binario dentro da propria imagem, para o build nao
 # depender do que esta instalado na maquina de quem roda.
-FROM golang:1.27 AS build
+FROM --platform=$BUILDPLATFORM golang:1.27 AS build
+ARG TARGETOS
+ARG TARGETARCH
 WORKDIR /build
 
 # As dependencias sao baixadas antes do codigo: enquanto go.mod/go.sum nao
@@ -12,7 +14,7 @@ COPY . .
 
 # CGO desligado gera um binario estatico, que roda numa imagem final sem
 # bibliotecas do sistema.
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /build/api ./cmd/api
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags="-s -w" -o /build/api ./cmd/api
 
 # Etapa 2 — imagem final: so o binario e os certificados raiz.
 FROM gcr.io/distroless/static-debian12:nonroot

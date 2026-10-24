@@ -1,0 +1,21 @@
+replicaCount: 3
+image:
+  repository: eduardofabri/client
+  tag: "1.2.0"
+  pullPolicy: IfNotPresent
+existingSecret: client-credentials
+jwtExistingName: jwt-public-key
+resources:
+  requests:
+    cpu: 50m
+    memory: 32Mi
+  limits:
+    cpu: 250m
+    memory: 128Mi
+ingress:
+  enabled: true
+  className: nginx
+  host: client.ganjj.local
+database:
+  enabled: true
+  image: postgres:17-alpine

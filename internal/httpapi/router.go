@@ -44,7 +44,7 @@ func Router(h *Handler, verificador *auth.Verifier, origensPermitidas []string) 
 	mux.Handle("GET /clients", protegido(somenteAdmin(http.HandlerFunc(h.listarPerfis))))
 	mux.Handle("GET /clients/{id}", protegido(somenteAdmin(http.HandlerFunc(h.buscarPerfil))))
 
-	return recuperaPanico(h.log)(cors(origensPermitidas)(mux))
+	return instrument(mux, recuperaPanico(h.log)(cors(origensPermitidas)(mux)))
 }
 
 // recuperaPanico transforma um panic em 500 no formato de erro da API.

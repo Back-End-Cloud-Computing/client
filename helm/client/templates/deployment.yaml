@@ -1,0 +1,93 @@
+# Client Service no Kubernetes.
+#
+# Troque "seu-usuario-dockerhub" pelo seu usuario real antes de aplicar, ou use
+# a imagem local se o cluster compartilhar o daemon do Docker (caso do OrbStack).
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8082"
+        prometheus.io/path: /metrics
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          # A imagem esta publicada no Docker Hub. IfNotPresent evita baixar
+          # de novo quando o cluster ja tem a mesma tag em cache local (caso
+          # do OrbStack, que compartilha o daemon do Docker).
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8082
+          env:
+            # Banco alcancado pelo NOME DO SERVICE, nunca pelo IP do Pod.
+            - name: DB_HOST
+              value: postgres-client
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: ganjj_client
+            - name: DB_USER
+              value: ganjj_client
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "existingSecret é obrigatório" .Values.existingSecret }}
+                  key: db-password
+            - name: JWT_PUBLIC_KEY_PATH
+              value: /keys/public.pem
+            - name: JWT_ISSUER
+              value: ganjj-authorization
+          volumeMounts:
+            - name: jwt-public-key
+              mountPath: /keys
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            httpGet:
+              path: /instance
+              port: 8082
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          # Sem isto um Pod com bug poderia consumir os recursos do node
+          # inteiro. O Go pede bem menos que a JVM do authorization.
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+      volumes:
+        # ConfigMap e nao Secret: este servico so recebe a chave PUBLICA, que
+        # permite verificar tokens mas nao emitir. A privada fica somente no
+        # Authorization, num Secret.
+        - name: jwt-public-key
+          configMap:
+            name: {{ .Values.jwtExistingName }}
+
+---
+# Endereco estavel do Client dentro do cluster.
+apiVersion: v1
+kind: Service
+metadata:
+  name: client
+spec:
+  selector:
+    app: client
+  ports:
+    - port: 8082
+      targetPort: 8082

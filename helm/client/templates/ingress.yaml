@@ -1,0 +1,43 @@
+{{- if .Values.ingress.enabled }}
+# Entrada HTTP externa para o Client. Ver o comentário em
+# authorization/k8s/ingress.yaml sobre por que o roteamento é por host.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: client-ingress
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /clients
+            pathType: Prefix
+            backend:
+              service:
+                name: client
+                port:
+                  number: 8082
+          - path: /health
+            pathType: Exact
+            backend:
+              service:
+                name: client
+                port:
+                  number: 8082
+          - path: /instance
+            pathType: Exact
+            backend:
+              service:
+                name: client
+                port:
+                  number: 8082
+          - path: /swagger
+            pathType: Prefix
+            backend:
+              service:
+                name: client
+                port:
+                  number: 8082
+
+{{- end }}
