@@ -14,12 +14,16 @@ spec:
       app: client
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8082"
+        prometheus.io/path: /metrics
       labels:
         app: client
     spec:
       containers:
         - name: client
-          image: eduardofabri/client:1.1.0
+          image: eduardofabri/client:1.2.0
           # A imagem esta publicada no Docker Hub. IfNotPresent evita baixar
           # de novo quando o cluster ja tem a mesma tag em cache local (caso
           # do OrbStack, que compartilha o daemon do Docker).
@@ -37,7 +41,10 @@ spec:
             - name: DB_USER
               value: ganjj_client
             - name: DB_PASSWORD
-              value: ganjj_client
+              valueFrom:
+                secretKeyRef:
+                  name: client-credentials
+                  key: db-password
             - name: JWT_PUBLIC_KEY_PATH
               value: /keys/public.pem
             - name: JWT_ISSUER
@@ -47,6 +54,7 @@ spec:
               mountPath: /keys
               readOnly: true
           readinessProbe:
+            timeoutSeconds: 5
             httpGet:
               path: /health
               port: 8082
@@ -54,6 +62,7 @@ spec:
             periodSeconds: 5
             failureThreshold: 20
           livenessProbe:
+            timeoutSeconds: 5
             httpGet:
               path: /instance
               port: 8082

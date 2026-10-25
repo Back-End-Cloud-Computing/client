@@ -1,0 +1,6 @@
+{
+  "auth.ganjj.local/auth/public-key": 200,
+  "auth.ganjj.local/metrics": 404,
+  "client.ganjj.local/instance": 200,
+  "client.ganjj.local/metrics": 404
+}

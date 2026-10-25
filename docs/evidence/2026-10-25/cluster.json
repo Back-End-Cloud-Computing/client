@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-25",
+  "cluster": "Minikube ganjj-n2",
+  "kubernetes": "1.37.0",
+  "deployments": {
+    "api-gateway": {
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "ganjj-api-gateway:validation"
+      ]
+    },
+    "authorization": {
+      "desired": 3,
+      "ready": 3,
+      "images": [
+        "eduardofabri/authorization:1.2.1"
+      ]
+    },
+    "checkout-fixtures": {
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "python:3.13-alpine"
+      ]
+    },
+    "client": {
+      "desired": 3,
+      "ready": 3,
+      "images": [
+        "eduardofabri/client:1.2.0"
+      ]
+    },
+    "ganjj-grafana": {
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "grafana/grafana:12.2.0"
+      ]
+    },
+    "ganjj-prometheus": {
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "prom/prometheus:v3.7.1"
+      ]
+    },
+    "mailpit": {
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "axllent/mailpit:v1.27.8"
+      ]
+    },
+    "oracle-auth": {
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "gvenzl/oracle-free:23-slim"
+      ]
+    },
+    "order": {
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "ganjj-order:validation"
+      ]
+    },
+    "postgres-client": {
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "postgres:17-alpine"
+      ]
+    },
+    "promotion": {
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "bascratki/promotion:1.0.0"
+      ]
+    },
+    "promotion-db": {
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "mysql:8.0"
+      ]
+    },
+    "rabbitmq": {
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "rabbitmq:4.1-alpine"
+      ]
+    },
+    "support": {
+      "desired": 1,
+      "ready": 1,
+      "images": [
+        "eduardofabri/support:1.0.1"
+      ]
+    }
+  },
+  "notes": [
+    "SQL Server Developer runs in an isolated Docker container on the same Docker network",
+    "Cart and Product are explicit test fixtures"
+  ]
+}

@@ -1,0 +1,1 @@
+Importe `dashboard.json` no Grafana e escolha o datasource Prometheus. Configure o scrape das anotações `prometheus.io/*` dos pods. O painel só tem dados após gerar tráfego. O JSON está preparado; a captura do painel deve ser feita depois da instalação no cluster.

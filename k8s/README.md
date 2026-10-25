@@ -111,3 +111,7 @@ E atualize a tag em `image:` no `client.yaml`.
 O PostgreSQL roda como Deployment sem volume persistente: se o Pod for recriado,
 o banco começa vazio e a aplicação recria a tabela. Um banco de verdade pediria
 StatefulSet com PersistentVolumeClaim.
+
+## Credenciais do banco e administrador
+
+Antes de aplicar os manifests, defina `DB_PASSWORD` no ambiente e execute `./k8s/criar-credentials.sh`. O script cria o Secret `client-credentials` no namespace atual; use o mesmo namespace ao aplicar os manifests. Não versione as senhas. Atualizar um Secret não altera a senha de um banco já inicializado: coordene a rotação no banco antes de reiniciar a aplicação.

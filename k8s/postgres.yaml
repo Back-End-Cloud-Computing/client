@@ -31,7 +31,10 @@ spec:
             - name: POSTGRES_USER
               value: ganjj_client
             - name: POSTGRES_PASSWORD
-              value: ganjj_client
+              valueFrom:
+                secretKeyRef:
+                  name: client-credentials
+                  key: db-password
           readinessProbe:
             exec:
               command: ["pg_isready", "-U", "ganjj_client", "-d", "ganjj_client"]
