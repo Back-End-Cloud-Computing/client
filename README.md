@@ -183,6 +183,6 @@ também mantém o serviço `authorization`.
 
 O workflow de CI executa build, análise e testes no PR e em `main`. `/metrics` fica acessível pelo Service interno e fora das rotas do Ingress. Os pods publicam as anotações de scrape. Importe `k8s/observability/dashboard.json` no Grafana selecionando Prometheus.
 
-Veja `helm/client/README.md` para instalar o chart, e `k8s/README.md` para criar as credenciais fora do Git. O workflow manual `Publish multi-architecture image` usa os secrets de Actions `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN` para publicar `eduardofabri/client:1.2.0` para AMD64 e ARM64. A tag dos manifests só pode ser usada depois dessa publicação. Em teste local, substitua pela imagem que acabou de construir.
+Veja `helm/client/README.md` para instalar o chart, e `k8s/README.md` para criar as credenciais fora do Git. O workflow manual `Publish multi-architecture image` usa os secrets de Actions `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN` para publicar `eduardofabri/client:1.2.0` para AMD64 e ARM64. As tags dos manifests foram publicadas e validadas em 25/10/2026. Em teste local, substitua pela imagem que acabou de construir.
 
 Estado de validação e pendências: [docs/n2-status.md](docs/n2-status.md).

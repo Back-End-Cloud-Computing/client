@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-25",
+  "cluster": "ganjj-n2",
+  "public_key_sha256": "2ca3af594dc420c6f9c1450107b6427f7daf2bd40840d85a5d1bf2d22d0ec357",
+  "checks": [
+    "public-key",
+    "RS256 signature",
+    "ADMIN login",
+    "CLIENTE registration/login",
+    "create/get profile",
+    "401 without token",
+    "403 CLIENTE admin route",
+    "200 ADMIN admin route",
+    "401 refresh as access",
+    "401 invalid signature",
+    "Prometheus endpoints"
+  ]
+}

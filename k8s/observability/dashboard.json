@@ -62,7 +62,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(client_http_requests_total{status=~\"5..\"}[$__rate_interval]))"
+          "expr": "sum(rate(client_http_requests_total{status=~\"5..\"}[$__rate_interval])) or vector(0)"
         }
       ],
       "fieldConfig": {

@@ -1,19 +1,16 @@
-# Validação N2 (client)
+# Validação N2 — client
 
-Preparado em 24/10/2026 para revisão. Não representa conclusão das etapas manuais.
+Atualizado em 25/10/2026. Evidências sanitizadas em `docs/evidence/2026-10-25/`.
 
-- CI, `/metrics`, credenciais em Secret, chart Helm e dashboard JSON implementados.
-- Validação local: `go test -race ./...`, `go vet ./...` e build Docker; `helm lint` e renderização dos templates.
-- Publicação Docker Hub pendente: configurar `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN`, executar o workflow de release para `1.2.0`, conferir `docker buildx imagetools inspect eduardofabri/client:1.2.0` e confirmar acesso público.
-- Cluster pendente: o ambiente não tinha contexto Kubernetes configurado. Criar os Secrets/chaves e validar `helm install` num Minikube limpo; gerar tráfego e capturar o dashboard.
-- Conferir os conteúdos das aulas de Helm (27/10) e observabilidade (03/11) antes do aceite final.
-- Ensaio com o grupo pendente, com tempo por pessoa anotado até 07/11. Apresentação em 10/11.
+## Executado
 
-## Roteiro para o ensaio
+- Build, análise e testes locais; CI do PR anterior verde (nova revisão será validada novamente).
+- Imagem pública Docker Hub `eduardofabri/client:1.2.0`, com linux/amd64 e linux/arm64. Manifest inspecionado e acesso anônimo validado.
+- Instalação real por Helm em Minikube limpo (perfil `ganjj-n2`, Kubernetes 1.37.0), credenciais externas ao Git.
+- Prometheus coletando o serviço e dashboard Grafana importado por provisionamento. Captura versionada.
+- Três réplicas saudáveis; criar/consultar perfil com JWT real; 401 sem token, 403 em rota administrativa para CLIENTE, 200 para ADMIN, 401 para refresh e assinatura adulterada.
+- Ingress aceita `/instance` e não encaminha `/metrics` (404).
 
-1. Explicar por que Go com roteador nativo e PostgreSQL para o perfil relacional.
-2. Explicar JWT RS256: quem guarda a privada, como a pública é distribuída e por que múltiplas réplicas validam o mesmo token.
-3. Demonstrar login, requisição protegida, 401 sem token e 403 sem papel adequado.
-4. Mostrar Deployments, Services, réplicas, probes, limites e credenciais por Secret.
-5. Gerar tráfego; mostrar requisições, erros e latência no Grafana.
-6. Anotar duração real e ajustar o roteiro com o grupo.
+## Pendências humanas / externas
+
+- Ensaio da apresentação com o grupo, com tempo por pessoa; roteiro pronto, mas não foi declarado um ensaio humano que não ocorreu.

@@ -54,6 +54,7 @@ spec:
               mountPath: /keys
               readOnly: true
           readinessProbe:
+            timeoutSeconds: 5
             httpGet:
               path: /health
               port: 8082
@@ -61,6 +62,7 @@ spec:
             periodSeconds: 5
             failureThreshold: 20
           livenessProbe:
+            timeoutSeconds: 5
             httpGet:
               path: /instance
               port: 8082
