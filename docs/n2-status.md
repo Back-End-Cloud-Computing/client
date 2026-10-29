@@ -15,4 +15,4 @@ Atualizado em 29/10/2026; as validações técnicas abaixo foram registradas em 
 
 - Ensaio da apresentação com o grupo, com tempo por pessoa; roteiro pronto, mas não foi declarado um ensaio humano que não ocorreu.
 
-Guia operacional próprio: [entrega-local.md](entrega-local.md). O ambiente permanecerá local; a revisão documental não reexecutou a suíte técnica.
+Guia operacional próprio: [entrega-local.md](entrega-local.md). O laboratório de desenvolvimento permanece local; a implantação compartilhada da N2 segue o kit EKS do grupo; a revisão documental não reexecutou a suíte técnica.

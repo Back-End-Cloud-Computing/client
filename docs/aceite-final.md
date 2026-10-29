@@ -24,3 +24,7 @@ Os critérios técnicos estão atendidos. Permanecem apenas as exceções aceita
 A imagem já está pública. O workflow opcional de publicação Docker Hub exige secrets para futuras execuções automáticas, mas configurar esse workflow adicional não é critério das issues #2/#4: elas exigem CI build/lint/test e imagem pública multiarch, ambos comprovados. Não há pendência de credencial pessoal para o aceite dessas issues.
 
 As evidências técnicas anteriores não foram reexecutadas apenas para escrever este documento. Guia operacional: [entrega-local.md](entrega-local.md); estado: [n2-status.md](n2-status.md).
+
+## Contexto da apresentação
+
+A validação local descrita nesta matriz é de desenvolvimento/testes. A implantação compartilhada da N2 segue o [kit EKS do api-gateway](https://github.com/Back-End-Cloud-Computing/api-gateway/tree/main/eks), sem tornar cada serviço público. Esta revisão documental não executa infraestrutura AWS nem afirma que uma nova implantação EKS foi realizada pelo agente.

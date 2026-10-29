@@ -2,6 +2,12 @@
 
 Atualizado em 29/10/2026. Este guia pertence ao serviço client; detalhes da API e configuração completa estão no [README](../README.md).
 
+## Desenvolvimento local e apresentação N2
+
+Este guia descreve o laboratório de desenvolvimento e validação local usado nesta etapa. A decisão temporária de trabalhar localmente não define o destino final da apresentação. A implantação compartilhada da N2 segue o [kit Amazon EKS do api-gateway](https://github.com/Back-End-Cloud-Computing/api-gateway/tree/main/eks), coordenado pelo grupo. O Gateway/Ingress é a entrada externa única; client, authorization e support continuam serviços internos, sem necessidade de uma URL pública por serviço.
+
+O kit aplica os manifests no namespace do contexto kubectl, default no fluxo padrão. DNS curto como authorization:8081 funciona para consumidores no mesmo namespace; authorization.default.svc:8081 identifica explicitamente o namespace default. O DNS com ganjj-n2 só vale no laboratório onde esse namespace foi criado/aplicado. Esta revisão é documental: não cria nem modifica infraestrutura AWS.
+
 ## Responsabilidade e dependências
 
 O client mantém nome, telefone e endereço no PostgreSQL. Não armazena senha nem emite tokens. O identificador da conta vem da claim sub do access token emitido pelo authorization.
@@ -63,6 +69,6 @@ Validações anteriores registradas em 25/10: perfil com JWT real, restrições 
 
 ## Pendências
 
-O ensaio real do grupo (client #7) continua pendente e por último. A revisão documental foi enviada à branch própria codex/documentacao-client; a integração na main depende de revisão. A decisão do grupo é manter o ambiente local. Não publicar senhas de banco ou tokens em documentação/issues.
+O ensaio real do grupo (client #7) continua pendente e por último. A revisão documental foi enviada à branch própria codex/documentacao-client; a integração na main depende de revisão. A etapa atual de desenvolvimento permanece local; a apresentação compartilhada segue o kit EKS do grupo. Não publicar senhas de banco ou tokens em documentação/issues.
 
 Matriz completa de aceite das issues deste serviço: [aceite-final.md](aceite-final.md).
