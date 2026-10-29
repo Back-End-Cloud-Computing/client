@@ -63,4 +63,4 @@ Validações anteriores registradas em 25/10: perfil com JWT real, restrições 
 
 ## Pendências
 
-O ensaio real do grupo (client #7) continua pendente e por último. A revisão documental está em branch própria e ainda não foi enviada ao GitHub. A decisão do grupo é manter o ambiente local. Não publicar senhas de banco ou tokens em documentação/issues.
+O ensaio real do grupo (client #7) continua pendente e por último. A revisão documental foi enviada à branch própria codex/documentacao-client; a integração na main depende de revisão. A decisão do grupo é manter o ambiente local. Não publicar senhas de banco ou tokens em documentação/issues.
