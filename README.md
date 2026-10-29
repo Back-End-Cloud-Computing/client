@@ -6,6 +6,8 @@ Microsserviço de perfil de cliente do e-commerce **GANJJ**. Guarda dados de cad
 
 ## Guia deste serviço
 
+[Aceite final das issues](docs/aceite-final.md): matriz de critérios, evidências e exceções combinadas.
+
 [Entrega local e integração](docs/entrega-local.md): responsabilidade, como iniciar, endereços, configuração, integração com os colegas, evidências e pendências específicas deste repositório. Atualizado em 29/10/2026.
 
 ## Stack
