@@ -1,6 +1,6 @@
 # Validação N2 — client
 
-Atualizado em 25/10/2026. Evidências sanitizadas em `docs/evidence/2026-10-25/`.
+Atualizado em 29/10/2026; as validações técnicas abaixo foram registradas em 25/10/2026. Evidências sanitizadas em `docs/evidence/2026-10-25/`.
 
 ## Executado
 
@@ -14,3 +14,5 @@ Atualizado em 25/10/2026. Evidências sanitizadas em `docs/evidence/2026-10-25/`
 ## Pendências humanas / externas
 
 - Ensaio da apresentação com o grupo, com tempo por pessoa; roteiro pronto, mas não foi declarado um ensaio humano que não ocorreu.
+
+Guia operacional próprio: [entrega-local.md](entrega-local.md). O ambiente permanecerá local; a revisão documental não reexecutou a suíte técnica.
