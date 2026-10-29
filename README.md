@@ -4,6 +4,12 @@ Microsserviço de perfil de cliente do e-commerce **GANJJ**. Guarda dados de cad
 (nome, telefone, endereço) — nenhuma credencial: e-mail e senha são do
 [authorization](https://github.com/Back-End-Cloud-Computing/authorization).
 
+## Guia deste serviço
+
+[Aceite final das issues](docs/aceite-final.md): matriz de critérios, evidências e exceções combinadas.
+
+[Entrega local e integração](docs/entrega-local.md): responsabilidade, como iniciar, endereços, configuração, integração com os colegas, evidências e pendências específicas deste repositório. Atualizado em 29/10/2026.
+
 ## Stack
 
 - **Go** (roteamento nativo do `net/http`, sem framework)
