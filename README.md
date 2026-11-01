@@ -6,6 +6,8 @@ Microsserviço de perfil de cliente do e-commerce **GANJJ**. Guarda dados de cad
 
 ## Guia deste serviço
 
+[Preparação para apresentar](docs/apresentacao-n2.md) · [Ficha de registro do ensaio](docs/registro-ensaio.md). O roteiro contém fala/comandos; a ficha recebe data e tempos somente depois do ensaio real.
+
 [Aceite final das issues](docs/aceite-final.md): matriz de critérios, evidências e exceções combinadas.
 
 [Entrega local e integração](docs/entrega-local.md): responsabilidade, como iniciar, endereços, configuração, integração com os colegas, evidências e pendências específicas deste repositório. Atualizado em 29/10/2026.
