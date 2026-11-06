@@ -253,6 +253,20 @@ paths:
       summary: Health check
       tags:
       - infra
+  /instance:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Nome do Pod que respondeu
+      tags:
+      - infra
 securityDefinitions:
   BearerAuth:
     description: Token JWT emitido pelo Authorization Service.
