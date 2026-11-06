@@ -302,6 +302,28 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/instance": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "infra"
+                ],
+                "summary": "Nome do Pod que respondeu",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
